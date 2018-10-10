@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:camel="http://camel.apache.org/schema/spring"
+    xmlns:cxf="http://camel.apache.org/schema/cxf"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="                  http://www.springframework.org/schema/beans      http://www.springframework.org/schema/beans/spring-beans.xsd                  http://camel.apache.org/schema/spring      http://camel.apache.org/schema/spring/camel-spring.xsd             http://camel.apache.org/schema/cxf      http://camel.apache.org/schema/cxf/camel-cxf.xsd">
+    <!-- Define a traditional camel context here -->
+    <cxf:cxfEndpoint
+        address="http://localhost:8280/service2/erp/account"
+        id="accountService" loggingFeatureEnabled="true" serviceClass="sample.ws.service.AccountService"/>
+    <bean
+        class="org.apache.camel.processor.aggregate.GroupedExchangeAggregationStrategy" id="group"/>
+    <bean class="org.redhat.MyAggregationStrategy" id="myAggregationStrategy"/>
+    <camelContext id="composite-camel-context" xmlns="http://camel.apache.org/schema/spring">
+        <endpoint id="soap_java_obj_to_xml" uri="dozer:soap_java_obj_to_xml?sourceModel=sample.ws.service.Account&amp;targetModel=generated_1538630117529.Account&amp;marshalId=generated_1538630117529&amp;mappingFile=soap_jxml_transformation.xml"/>
+        <dataFormats>
+            <jaxb contextPath="generated_1538630117529" id="generated_1538630117529"/>
+        </dataFormats>
+        <restConfiguration bindingMode="off" component="servlet" port="8180">
+            <dataFormatProperty key="xml.out.mustBeJAXBElement" value="false"/>
+            <dataFormatProperty key="prettyPrint" value="true"/>
+            <apiProperty key="cors" value="true"/>
+            <apiProperty key="api.title" value="Customer Camel REST API"/>
+            <apiProperty key="api.version" value="1.0.0"/>
+        </restConfiguration>
+        <rest path="/api">
+            <get uri="/account/{id}">
+                <description>Get Account from crm system based on id</description>
+                <to uri="direct:account"/>
+            </get>
+            <get uri="/service1/account/{id}">
+                <description>Get Account from crm system based on id</description>
+                <to uri="direct:service1-account"/>
+            </get>
+            <get uri="/service2/account/{id}">
+                <description>Get Account from ERP system based on id</description>
+                <to uri="direct:service2-account"/>
+            </get>
+        </rest>
+        <route id="service1-route">
+            <!-- <removeHeader headerName="Exchange.HTTP_PATH" id="_removeHeader1"/> -->
+            <from id="fromService1Account" uri="direct:service1-account"/>
+            <log id="_log1" message="${headers}"/>
+            <setHeader headerName="Exchange.HTTP_PATH" id="_setHeader1">
+                <simple>${header.id}</simple>
+            </setHeader>
+            <to id="_to_rest_service1" uri="http4://localhost:8180/service1/xml/account/?bridgeEndpoint=true"/>
+        </route>
+        <route id="service2-route">
+            <from id="fromService2Account" uri="direct:service2-account"/>
+            <setBody id="_acct_xml_id_1">
+                <simple>${header.id}</simple>
+            </setBody>
+            <to id="soapCallXML1" uri="cxf:bean:accountService?defaultOperationName=getAccount"/>
+            <setBody id="_account1">
+                <simple>${body[0]}</simple>
+            </setBody>
+            <to id="_to_soap_java_obj_to_xml1" uri="ref:soap_java_obj_to_xml"/>
+        </route>
+        <route id="composite-service-route">
+            <from id="fromAccount" uri="direct:account"/>
+            <multicast id="_multicast1" parallelAggregate="false"
+                parallelProcessing="false" strategyRef="group">
+                <to id="_to1" uri="direct:service1-account"/>
+                <to id="_to2" uri="direct:service2-account"/>
+            </multicast>
+        </route>
+        <!-- 
+        <route id="composite-service-route">
+            <from id="fromAccount" uri="direct:account"/>
+            <setBody id="_acct_xml_id_2">
+                <simple>${header.id}</simple>
+            </setBody>
+            <to id="soapCallXML2" uri="cxf:bean:accountService?defaultOperationName=getAccount"/>
+            <setBody id="_account2">
+                <simple>${body[0]}</simple>
+            </setBody>
+            <to id="_to_soap_java_obj_to_xml2" uri="ref:soap_java_obj_to_xml"/>
+            <setHeader headerName="Exchange.HTTP_PATH" id="_setHeader2">
+                <simple>${header.id}</simple>
+            </setHeader>
+            <enrich id="_enrich1">
+                <simple>http4://localhost:8180/service1/xml/account/?bridgeEndpoint=true</simple>
+            </enrich>
+        </route>
+        -->
+    </camelContext>
+</beans>

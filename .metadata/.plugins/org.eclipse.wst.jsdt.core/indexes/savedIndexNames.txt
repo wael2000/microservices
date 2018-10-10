@@ -1,0 +1,7 @@
+INDEX VERSION 1.4+/Users/redhat/Documents/Fuse/microservices/.metadata/.plugins/org.eclipse.wst.jsdt.core/indexes
+771900569.index
+2801393822.index
+2253445088.index
+1220401225.index
+252679949.index
+1688125081.index

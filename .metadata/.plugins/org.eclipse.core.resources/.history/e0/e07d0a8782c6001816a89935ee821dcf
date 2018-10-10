@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring       http://camel.apache.org/schema/spring/camel-spring.xsd">
+    <bean class="org.redhat.CRMAccountBean" id="accounService"/>
+    <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+        <endpoint id="account_to_json" uri="dozer:account_to_json?sourceModel=org.redhat.CRMAccount&amp;targetModel=account.Account&amp;marshalId=transform-json&amp;mappingFile=transformation_to_json.xml"/>
+        <endpoint id="account_to_xml" uri="dozer:account_to_xml?sourceModel=org.redhat.CRMAccount&amp;targetModel=generated_1538509883777.Account&amp;marshalId=generated_1538509883777&amp;mappingFile=transformation_to_xml.xml"/>
+        <dataFormats>
+            <jaxb contextPath="generated_1538509883777" id="generated_1538509883777"/>
+            <json id="transform-json" library="Jackson"/>
+        </dataFormats>
+        <restConfiguration bindingMode="off" component="servlet"
+            contextPath="service1" port="8080">
+            <dataFormatProperty key="xml.out.mustBeJAXBElement" value="false"/>
+            <dataFormatProperty key="prettyPrint" value="true"/>
+            <apiProperty key="cors" value="true"/>
+            <apiProperty key="api.title" value="Customer Camel REST API"/>
+            <apiProperty key="api.version" value="1.0.0"/>
+        </restConfiguration>
+        <rest path="/xml">
+            <get uri="/accounts">
+                <description>Get Account from crm system based on id</description>
+                <to uri="direct:account-xml"/>
+                <!-- <to uri="bean:accounService?method=getAccounts"/> -->
+            </get>
+        </rest>
+        <rest path="/json">
+            <get uri="/accounts">
+                <description>Get Account from crm system based on id</description>
+                <to uri="direct:account-json"/>
+            </get>
+        </rest>
+        <rest path="/">
+            <get uri="/accounts">
+                <description>Get Account from crm system based on id</description>
+                <to uri="direct:account"/>
+                <!-- <to uri="bean:accounService?method=getAccounts"/> -->
+            </get>
+        </rest>
+        <route id="get-crm-accounts-xml-json">
+            <from id="from-crm-rest-endpoint" uri="direct:account"/>
+            <choice id="_choice1">
+                <when id="_when+xml">
+                    <simple>${header.format}='xml'</simple>
+                    <to id="_to31" uri="bean:accounService?method=getAccounts"/>
+                    <to id="_to32" uri="ref:account_to_xml"/>
+                </when>
+                <when id="_when_json">
+                    <simple>${header.format}='json'</simple>
+                    <to id="_to41" uri="bean:accounService?method=getAccounts"/>
+                    <to id="_to42" uri="ref:account_to_json"/>
+                </when>
+            </choice>
+        </route>
+        <route id="get-crm-accounts-xml">
+            <from id="from-crm-rest-xml-endpoint" uri="direct:account-xml"/>
+            <to id="_to11" uri="bean:accounService?method=getAccounts"/>
+            <to id="_to12" uri="ref:account_to_xml"/>
+        </route>
+        <route id="get-crm-accounts-json">
+            <from id="from-crm-rest-json-endpoint" uri="direct:account-json"/>
+            <to id="_to21" uri="bean:accounService?method=getAccounts"/>
+            <to id="_to22" uri="ref:account_to_json"/>
+        </route>
+    </camelContext>
+</beans>

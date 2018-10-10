@@ -1,0 +1,20 @@
+package org.redhat;
+
+import javax.inject.Named;
+import javax.inject.Singleton;
+import java.util.ArrayList;
+
+@Singleton
+@Named("CRMAccountBean")
+public class CRMAccountBean {
+	private ArrayList<CRMAccount> users = new ArrayList<CRMAccount>();
+
+	ArrayList<CRMAccount> getUsers() {
+		return users;
+	}
+
+	void setUsers(ArrayList<CRMAccount> users) {
+		this.users = users;
+	}
+	  
+}

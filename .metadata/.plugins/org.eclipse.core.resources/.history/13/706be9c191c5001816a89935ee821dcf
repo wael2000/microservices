@@ -1,0 +1,8 @@
+package org.redhat;
+
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement(name = "CRMAccount")
+public class CRMAccount {
+
+}

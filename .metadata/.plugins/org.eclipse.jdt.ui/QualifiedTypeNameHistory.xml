@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="org.redhat.CRMAccount"/>
+<fullyQualifiedTypeName name="org.apache.camel.processor.aggregate.AggregationStrategy"/>
+<fullyQualifiedTypeName name="org.apache.camel.Exchange"/>
+<fullyQualifiedTypeName name="java.util.List"/>
+<fullyQualifiedTypeName name="org.apache.camel.impl.DefaultExchange"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="org.apache.camel.Message"/>
+</qualifiedTypeNameHistroy>

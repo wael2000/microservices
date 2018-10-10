@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring       http://camel.apache.org/schema/spring/camel-spring.xsd">
+    <bean class="org.redhat.CRMAccountBean" id="accounService"/>
+    <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+        <restConfiguration bindingMode="off" component="servlet" port="8080">
+            <dataFormatProperty key="xml.out.mustBeJAXBElement" value="false"/>
+            <dataFormatProperty key="prettyPrint" value="true"/>
+            <apiProperty key="cors" value="true"/>
+            <apiProperty key="api.title" value="Customer Camel REST API"/>
+            <apiProperty key="api.version" value="1.0.0"/>
+        </restConfiguration>
+        <rest path="/toto">
+            <get uri="/accounts">
+                <description>Get Account from crm system based on id</description>
+                <to uri="direct:account"/>
+                <!-- <to uri="bean:accounService?method=getAccounts"/> -->
+            </get>
+        </rest>
+        <route id="get-crm-accounts">
+            <!-- <bean id="from-crm-account-service" method="getAccounts" ref="accounService"/>  -->
+            <from id="from-crm-rest-endpoint" uri="direct:account"/>
+            <to id="_to1" uri="bean:accounService?method=getAccounts"/>
+            <transform id="_transform1">
+                <constant>Hello World</constant>
+            </transform>
+        </route>
+    </camelContext>
+</beans>

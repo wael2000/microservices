@@ -1,0 +1,59 @@
+package org.redhat;
+
+import javax.inject.Named;
+import javax.inject.Singleton;
+import java.util.ArrayList;
+
+@Singleton
+@Named("CRMAccountBean")
+public class CRMAccountBean {
+	private ArrayList<CRMAccount> accounts = new ArrayList<CRMAccount>();
+	
+	public CRMAccountBean()
+	{
+		for (int i = 1; i <= 10; i++) {
+			CRMAccount account = new CRMAccount();
+            account.setId(i);
+            account.setName("Name_" + i);
+            account.setEmail("Name_" + i + "@redhat.com");
+            account.setCompany("red hat");
+            accounts.add(account);
+          }
+	}
+	ArrayList<CRMAccount> getAccounts() {
+		return accounts;
+	}
+
+	void setAccounts(ArrayList<CRMAccount> accounts) {
+		this.accounts = accounts;
+	}
+	
+	public CRMAccount createAccount(CRMAccount account) {
+		accounts.add(account);
+        return account;
+    }
+	
+	public CRMAccount geAccount(Integer id) {
+        for (CRMAccount account:accounts)
+            if (account.getId().equals(id))
+                return account;
+        return null;
+    }
+	
+	public CRMAccount updateAccount(CRMAccount accountToUpdate) {
+        for (CRMAccount account:accounts)
+            if (account.getId().equals(accountToUpdate.getId())) {
+            		account.setName(accountToUpdate.getName());
+                return account;
+            }
+        return null;
+    }
+
+    public boolean deleteAccount(Integer id) {
+    	for (CRMAccount account:accounts)
+            if (account.getId().equals(id)) {
+                return accounts.remove(account);
+            }
+        return false;
+    }
+}

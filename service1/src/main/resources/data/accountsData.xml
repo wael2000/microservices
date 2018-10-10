@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+   <account>
+       <id>1</id>
+       <company>red hat</company>
+       <email>Name_123@redhat.com</email>
+       <name>First Name_123</name>
+    </account>

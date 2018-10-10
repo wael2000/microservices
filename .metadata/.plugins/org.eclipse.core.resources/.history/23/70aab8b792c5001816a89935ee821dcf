@@ -1,0 +1,9 @@
+package org.redhat;
+
+import javax.inject.Named;
+import javax.inject.Singleton;
+import java.util.ArrayList;
+
+public class CRMAccountBean {
+
+}

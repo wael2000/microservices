@@ -1,0 +1,6 @@
+package org.redhat;
+
+@XmlRootElement(name = "CRMAccount")
+public class CRMAccount {
+
+}

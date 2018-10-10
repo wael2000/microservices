@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+   <account>
+       <id>1</id>
+       <company>red hat</company>
+       <email>Name_123@redhat.com</email>
+       <name>First Name_123</name>
+       <firstName>First Name_100</firstName>
+	   <lastName>Last Name_100</lastName>
+       <addressLine1>AddressLine1_100</addressLine1>
+	   <addressLine2>AddressLine2_100</addressLine2>
+	   <charges>10000</charges>
+       <total>1000000</total>
+       <net></net>
+    </account>
