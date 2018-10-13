@@ -27,9 +27,13 @@
                 <description>Get Account from crm system based on id</description>
                 <to uri="direct:account"/>
             </get>
-            <get uri="/service1/account/{id}">
+            <get uri="/service1/account/xml/{id}">
                 <description>Get Account from crm system based on id</description>
                 <to uri="direct:service1-account"/>
+            </get>
+            <get uri="/service1/account/json/{id}">
+                <description>Get Account in json format from crm system based on id</description>
+                <to uri="direct:service1-account-json"/>
             </get>
             <get uri="/service2/account/{id}">
                 <description>Get Account from ERP system based on id</description>
@@ -37,13 +41,18 @@
             </get>
         </rest>
         <route id="service1-route">
-            <!-- <removeHeader headerName="Exchange.HTTP_PATH" id="_removeHeader1"/> -->
-            <!-- <log id="_log1" message="${headers}"/> -->
             <from id="fromService1Account" uri="direct:service1-account"/>
             <setHeader headerName="Exchange.HTTP_PATH" id="_setHeader1">
                 <simple>${header.id}</simple>
             </setHeader>
             <to id="_to_rest_service1" uri="http4://service1.myservices.svc/service1/xml/account/?bridgeEndpoint=true"/>
+        </route>
+        <route id="service1-route-json">
+            <from id="fromService1Account-json" uri="direct:service1-account-json"/>
+            <setHeader headerName="Exchange.HTTP_PATH" id="_setHeader1-json">
+                <simple>${header.id}</simple>
+            </setHeader>
+            <to id="_to_rest_service1-json" uri="http4://service1.myservices.svc/service1/json/account/?bridgeEndpoint=true"/>
         </route>
         <route id="service2-route">
             <from id="fromService2Account" uri="direct:service2-account"/>
